@@ -134,6 +134,13 @@ class Game extends React.Component {
 
 ReactDOM.render(<Game />, document.getElementById("root"));
 
+/**
+ * This function is used to calculate the position of the move made by the user.
+ * This is down by looping through the columns and the rows until it finds the
+ * position of the move. It returns an object of col: in the range of 1-3 and
+ * row: in the range of 1-3.
+ * @param {*} i
+ */
 function calculatePosition(i) {
   let col, row;
   let newI = 0;

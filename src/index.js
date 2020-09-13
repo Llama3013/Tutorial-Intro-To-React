@@ -1,10 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-
+/**
+ * Added a style to the button for highlighting squares that won the game
+ * @param {Object} props contains highlight object,
+ * onClick function and value
+ */
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
+    <button style={props.highlight} className="square" onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -28,9 +32,21 @@ class Board extends React.Component {
     return board;
   }
 
+  /**
+   * Added highlight prop to Square component and condtionals to find
+   * winning squares
+   * @param {Number} i specfies what square is to be rendered
+   */
   renderSquare(i) {
+    let win;
+    if(this.props.win) {
+      win = this.props.win.includes(i) ? {backgroundColor: "greenyellow"} : {backgroundColor: "white"}
+    } else {
+      win = {backgroundColor: "white"}
+    }
     return (
       <Square
+        highlight={win}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
       />
@@ -118,7 +134,9 @@ class Game extends React.Component {
         game state is the same as the current step*/
       const bold =
         current === step ? { fontWeight: "bold" } : { fontWeight: "normal" };
-      const reversedMove = isReversed ? this.state.history.length - move - 1 : move;
+      const reversedMove = isReversed
+        ? this.state.history.length - move - 1
+        : move;
       const desc = reversedMove
         ? "Go to move #" +
           reversedMove +
@@ -139,7 +157,7 @@ class Game extends React.Component {
 
     let status;
     if (winner) {
-      status = "Winner: " + winner;
+      status = "Winner: " + winner.player;
     } else {
       status = "Next Player: " + (this.state.xIsNext ? "X" : "O");
     }
@@ -150,6 +168,7 @@ class Game extends React.Component {
       <div className="game">
         <div className="game-board">
           <Board
+            win={winner ? winner.line : null}
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}
           />
@@ -175,7 +194,8 @@ ReactDOM.render(<Game />, document.getElementById("root"));
  * user. This is down by looping through the columns and the rows until it
  * finds the position of the move. It returns an object of col: in the range
  * of 1-3 and row: in the range of 1-3.
- * @param {*} i
+ * @param {Number} i The index of the current square
+ * @return {Object} The current column and row
  */
 function calculatePosition(i) {
   let col, row;
@@ -192,6 +212,13 @@ function calculatePosition(i) {
   }
 }
 
+/**
+ * Changed what returns to an object of player (what it used to return) and
+ * line which is the index of the squares that won the game for the user
+ * which need to be highlighted later.
+ * @param {Array} squares The array of the current board
+ * @return {Object} The player who won and the line that won
+ */
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
@@ -206,7 +233,7 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return { player: squares[a], line: lines[i] };
     }
   }
   return null;

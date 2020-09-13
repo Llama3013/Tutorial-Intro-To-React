@@ -22,8 +22,8 @@ class Board extends React.Component {
         //This stores a square component into the array squares
         squares.push(this.renderSquare(3 * row + col));
       }
-    //This stores a row of squares into the board array
-    board.push(<div className="board-row">{squares}</div>)
+      //This stores a row of squares into the board array
+      board.push(<div className="board-row">{squares}</div>);
     }
     return board;
   }
@@ -39,7 +39,7 @@ class Board extends React.Component {
 
   //removed hardcoded rows and squares and now just runs render function inside a <div>
   render() {
-    return <div>{this.renderBoard()}</div>
+    return <div>{this.renderBoard()}</div>;
   }
 }
 
@@ -56,6 +56,7 @@ class Game extends React.Component {
       ],
       stepNumber: 0,
       xIsNext: true,
+      isReversed: false,
     };
   }
 
@@ -84,23 +85,41 @@ class Game extends React.Component {
   }
 
   jumpTo(step) {
+    const newStep = this.state.isReversed
+      ? this.state.history.length - step - 1
+      : step;
     this.setState({
-      stepNumber: step,
+      stepNumber: newStep,
       xIsNext: step % 2 === 0,
+    });
+  }
+
+  reverseList() {
+    this.setState((state) => {
+      return { isReversed: !state.isReversed };
     });
   }
 
   render() {
     const history = this.state.history;
-    const current = history[this.state.stepNumber];
+    const stepNumber = this.state.stepNumber;
+    const current = history[stepNumber];
     const winner = calculateWinner(current.squares);
+    const isReversed = this.state.isReversed;
+    const historyMap = isReversed ? history.slice(0).reverse() : history;
 
-    const moves = history.map((step, move) => {
+    const moves = historyMap.map((step, move) => {
       //This element bold saves a ternary operator to check if the current game state is the same as the current step
       const bold =
         current === step ? { fontWeight: "bold" } : { fontWeight: "normal" };
-      const desc = move
-        ? "Go to move #" + move + " at col: " + step.col + " row: " + step.row
+      const reversedMove = isReversed ? stepNumber - move : move;
+      const desc = reversedMove
+        ? "Go to move #" +
+          reversedMove +
+          " at row: " +
+          step.row +
+          " col: " +
+          step.col
         : "Go to game start";
       //Added style to the button to take on the bold element
       return (
@@ -129,7 +148,10 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{moves}</ol>
+          {isReversed ? <ol reversed>{moves}</ol> : <ol>{moves}</ol>}
+          <button onClick={() => this.reverseList()}>
+            {isReversed ? "Ascending" : "Descending"}
+          </button>
         </div>
       </div>
     );

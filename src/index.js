@@ -96,12 +96,18 @@ class Game extends React.Component {
     const winner = calculateWinner(current.squares);
 
     const moves = history.map((step, move) => {
+      //This element bold saves a ternary operator to check if the current game state is the same as the current step
+      const bold =
+        current === step ? { fontWeight: "bold" } : { fontWeight: "normal" };
       const desc = move
         ? "Go to move #" + move + " at col: " + step.col + " row: " + step.row
         : "Go to game start";
+      //Added style to the button to take on the bold element
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <button style={bold} onClick={() => this.jumpTo(move)}>
+            {desc}
+          </button>
         </li>
       );
     });

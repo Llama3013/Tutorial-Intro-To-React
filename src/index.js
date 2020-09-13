@@ -11,6 +11,23 @@ function Square(props) {
 }
 
 class Board extends React.Component {
+  renderBoard() {
+    //This is array is to store the rows of squares
+    let board = [];
+    let col, row;
+    for (row = 0; row < 3; row++) {
+      //This array is to store a row of squares
+      let squares = [];
+      for (col = 0; col < 3; col++) {
+        //This stores a square component into the array squares
+        squares.push(this.renderSquare(3 * row + col));
+      }
+    //This stores a row of squares into the board array
+    board.push(<div className="board-row">{squares}</div>)
+    }
+    return board;
+  }
+
   renderSquare(i) {
     return (
       <Square
@@ -20,26 +37,9 @@ class Board extends React.Component {
     );
   }
 
+  //removed hardcoded rows and squares and now just runs render function inside a <div>
   render() {
-    return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
+    return <div>{this.renderBoard()}</div>
   }
 }
 

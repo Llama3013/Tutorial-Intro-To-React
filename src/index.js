@@ -37,7 +37,8 @@ class Board extends React.Component {
     );
   }
 
-  //removed hardcoded rows and squares and now just runs render function inside a <div>
+  /*removed hardcoded rows and squares and now just runs render function
+    inside a <div>*/
   render() {
     return <div>{this.renderBoard()}</div>;
   }
@@ -65,7 +66,8 @@ class Game extends React.Component {
     const col = position.col;
     const row = position.row;
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    const current = history[history.length - 1];
+    const histLength = history.length;
+    const current = history[histLength - 1];
     const squares = current.squares.slice();
     if (calculateWinner(squares) || squares[i]) {
       return;
@@ -79,22 +81,25 @@ class Game extends React.Component {
           row: row,
         },
       ]),
-      stepNumber: history.length,
+      stepNumber: histLength,
       xIsNext: !this.state.xIsNext,
     });
   }
 
   jumpTo(step) {
+    //This calculates the new position of the button if the state is reversed
     const newStep = this.state.isReversed
       ? this.state.history.length - step - 1
       : step;
     this.setState({
       stepNumber: newStep,
-      xIsNext: step % 2 === 0,
+      xIsNext: newStep % 2 === 0,
     });
   }
 
-  reverseList() {
+  /*This simply changes the state of isReversed to the opposite it currently
+    is and forces a rerender since the state is being changed*/
+  reverse() {
     this.setState((state) => {
       return { isReversed: !state.isReversed };
     });
@@ -102,17 +107,18 @@ class Game extends React.Component {
 
   render() {
     const history = this.state.history;
-    const stepNumber = this.state.stepNumber;
-    const current = history[stepNumber];
+    const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const isReversed = this.state.isReversed;
+    //This checks if the history array needs to be reversed for ascending list
     const historyMap = isReversed ? history.slice(0).reverse() : history;
 
     const moves = historyMap.map((step, move) => {
-      //This element bold saves a ternary operator to check if the current game state is the same as the current step
+      /*This element bold saves a ternary operator to check if the current
+        game state is the same as the current step*/
       const bold =
         current === step ? { fontWeight: "bold" } : { fontWeight: "normal" };
-      const reversedMove = isReversed ? stepNumber - move : move;
+      const reversedMove = isReversed ? this.state.history.length - move - 1 : move;
       const desc = reversedMove
         ? "Go to move #" +
           reversedMove +
@@ -138,6 +144,8 @@ class Game extends React.Component {
       status = "Next Player: " + (this.state.xIsNext ? "X" : "O");
     }
 
+    /*Added reverse button and modified the list of moves to change the order
+      when reverse is toggled*/
     return (
       <div className="game">
         <div className="game-board">
@@ -149,7 +157,7 @@ class Game extends React.Component {
         <div className="game-info">
           <div>{status}</div>
           {isReversed ? <ol reversed>{moves}</ol> : <ol>{moves}</ol>}
-          <button onClick={() => this.reverseList()}>
+          <button onClick={() => this.reverse()}>
             {isReversed ? "Ascending" : "Descending"}
           </button>
         </div>
@@ -163,10 +171,10 @@ class Game extends React.Component {
 ReactDOM.render(<Game />, document.getElementById("root"));
 
 /**
- * This function is used to calculate the position of the move made by the user.
- * This is down by looping through the columns and the rows until it finds the
- * position of the move. It returns an object of col: in the range of 1-3 and
- * row: in the range of 1-3.
+ * This function is used to calculate the position of the move made by the
+ * user. This is down by looping through the columns and the rows until it
+ * finds the position of the move. It returns an object of col: in the range
+ * of 1-3 and row: in the range of 1-3.
  * @param {*} i
  */
 function calculatePosition(i) {

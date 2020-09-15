@@ -39,10 +39,12 @@ class Board extends React.Component {
    */
   renderSquare(i) {
     let win;
-    if(this.props.win) {
-      win = this.props.win.includes(i) ? {backgroundColor: "greenyellow"} : {backgroundColor: "white"}
+    if (this.props.win) {
+      win = this.props.win.includes(i)
+        ? { backgroundColor: "greenyellow" }
+        : { backgroundColor: "white" };
     } else {
-      win = {backgroundColor: "white"}
+      win = { backgroundColor: "white" };
     }
     return (
       <Square
@@ -158,8 +160,10 @@ class Game extends React.Component {
     let status;
     if (winner) {
       status = "Winner: " + winner.player;
+      //This else if checks if the array has any empty squares on the board
     } else if (current.squares.includes(null)) {
       status = "Next Player: " + (this.state.xIsNext ? "X" : "O");
+      //If nobody has won and the board has no empty squares there must be a draw
     } else {
       status = "It's a draw!";
     }

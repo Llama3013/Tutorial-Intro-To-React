@@ -158,8 +158,10 @@ class Game extends React.Component {
     let status;
     if (winner) {
       status = "Winner: " + winner.player;
-    } else {
+    } else if (current.squares.includes(null)) {
       status = "Next Player: " + (this.state.xIsNext ? "X" : "O");
+    } else {
+      status = "It's a draw!";
     }
 
     /*Added reverse button and modified the list of moves to change the order
